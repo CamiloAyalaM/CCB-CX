@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ruta CX · Taller de experiencia del cliente</title>
+<style>
+  :root{
+    --magenta:#E6007C; --naranja:#ED6C26; --amarillo:#FBBA00; --tinta:#343433;
+    --gris:#626362; --linea:#E7E7E7; --fondo:#F6F6F5; --blanco:#fff;
+    --ok:#1F8A5B; --ok-bg:#E8F5EE; --warn:#9A6400; --warn-bg:#FFF6DC; --alert:#C2185B; --alert-bg:#FFE9F1;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--tinta);background:var(--fondo);font-size:15px;line-height:1.45}
+  button,input,select,textarea{font:inherit;color:inherit}
+  .aviso{background:var(--tinta);color:#fff;font-size:12.5px;padding:6px 16px;text-align:center}
+  header{background:linear-gradient(95deg,var(--magenta),var(--naranja) 75%,var(--amarillo));color:#fff;padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  header h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.2px}
+  header .sub{font-size:12.5px;opacity:.95}
+  .toggle{margin-left:auto;background:rgba(255,255,255,.22);border-radius:999px;padding:3px;display:flex}
+  .toggle button{border:0;background:transparent;color:#fff;padding:7px 16px;border-radius:999px;cursor:pointer;font-weight:700;font-size:13px}
+  .toggle button.on{background:#fff;color:var(--magenta)}
+  main{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+  .pasos{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+  .pasos button{flex:1 1 130px;border:1px solid var(--linea);background:#fff;border-radius:10px;padding:9px 10px;text-align:left;cursor:pointer;display:flex;gap:9px;align-items:center;min-width:0}
+  .pasos .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--linea);color:var(--gris);display:grid;place-items:center;font-weight:700;font-size:13px}
+  .pasos .t{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pasos button.on{border-color:var(--magenta);box-shadow:inset 0 -3px 0 var(--magenta)}
+  .pasos button.on .n{background:var(--magenta);color:#fff}
+  .pasos button.hecho .n{background:var(--ok);color:#fff}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:#fff;border:1px solid var(--linea);border-radius:14px;padding:20px}
+  .card h2{font-size:22px;margin:0 0 4px;color:var(--magenta)}
+  .card h3{font-size:15px;margin:22px 0 8px}
+  .lead{color:var(--gris);margin:0 0 16px;max-width:68ch}
+  label{display:block;font-size:12.5px;font-weight:700;color:var(--gris);margin-bottom:4px}
+  input[type=text],select,textarea{width:100%;border:1px solid #cfcfcf;border-radius:8px;padding:8px 10px;background:#fff}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--magenta);outline-offset:1px;border-color:var(--magenta)}
+  textarea{resize:vertical;min-height:58px}
+  .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .f3{display:grid;grid-template-columns:2fr 2fr 1fr;gap:12px}
+  @media (max-width:640px){.f2,.f3{grid-template-columns:1fr}}
+  .tabla{overflow-x:auto;margin:0 -4px}
+  table{border-collapse:collapse;width:100%;min-width:620px}
+  th{font-size:12px;text-align:left;color:var(--gris);padding:6px 4px;font-weight:700}
+  td{padding:4px;vertical-align:middle}
+  td.c{text-align:center;width:74px}
+  td.x{width:34px}
+  .quitar{border:0;background:transparent;color:var(--gris);cursor:pointer;font-size:18px;line-height:1;padding:4px 8px;border-radius:6px}
+  .quitar:hover{background:var(--alert-bg);color:var(--alert)}
+  .btn{border:0;border-radius:9px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--magenta);color:#fff}
+  .btn.sec{background:#fff;color:var(--magenta);border:1.5px solid var(--magenta)}
+  .btn.min{padding:7px 12px;font-size:13px}
+  .acciones{display:flex;gap:10px;justify-content:space-between;margin-top:22px;flex-wrap:wrap}
+  .check{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;font-weight:400;color:var(--tinta);background:var(--fondo);padding:12px;border-radius:10px;margin-top:14px}
+  .check input{margin-top:3px;accent-color:var(--magenta)}
+  aside .card{padding:16px}
+  aside h4{margin:0 0 10px;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+  .punt{font-size:12.5px;color:var(--gris);font-weight:400}
+  .fb{display:flex;gap:8px;padding:8px 10px;border-radius:9px;font-size:13.5px;margin-bottom:6px}
+  .fb b{flex:none}
+  .fb.ok{background:var(--ok-bg);color:#14573A}.fb.warn{background:var(--warn-bg);color:#6B4700}.fb.alert{background:var(--alert-bg);color:#8E1245}
+  .ia{margin-top:14px;border-top:1px solid var(--linea);padding-top:14px}
+  .ia p{font-size:13.5px;margin:8px 0 0}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--warn-bg);color:var(--warn)}
+  .sat{display:flex;gap:6px;margin-top:8px}
+  .sat button{flex:1;border:1px solid var(--linea);background:#fff;border-radius:8px;padding:6px 0;cursor:pointer;font-weight:700}
+  .sat button.on{background:var(--magenta);border-color:var(--magenta);color:#fff}
+  /* Mi ruta */
+  .ruta-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}
+  .chips{display:flex;gap:0;flex-wrap:wrap;row-gap:8px}
+  .chip{background:var(--fondo);border:1px solid var(--linea);padding:8px 12px;font-size:13px;position:relative;margin-right:14px;border-radius:8px;max-width:190px}
+  .chip.mv{border-color:var(--magenta);background:var(--alert-bg)}
+  .chip small{display:block;color:var(--gris);font-size:11.5px}
+  .chip:not(:last-child)::after{content:"›";position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--gris);font-weight:700}
+  .norte{background:linear-gradient(95deg,var(--magenta),var(--naranja));color:#fff;border-radius:12px;padding:14px 16px}
+  .norte .v{font-size:20px;font-weight:700}
+  .mini{width:100%;min-width:0;font-size:13px}
+  .mini th,.mini td{border-bottom:1px solid var(--linea);padding:6px 6px}
+  .barra{height:10px;background:var(--linea);border-radius:99px;overflow:hidden}
+  .barra i{display:block;height:100%;background:var(--magenta);border-radius:99px}
+  .dim{display:grid;grid-template-columns:150px 1fr 44px;gap:10px;align-items:center;font-size:13px;margin:7px 0}
+  .tres{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  @media (max-width:640px){.tres{grid-template-columns:1fr}.dim{grid-template-columns:110px 1fr 40px}}
+  .tres div{background:var(--fondo);border-radius:10px;padding:10px 12px;font-size:13.5px}
+  .tres b{display:block;color:var(--magenta);font-size:12px;margin-bottom:3px}
+  /* Facilitador */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  @media (max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:#fff;border:1px solid var(--linea);border-radius:12px;padding:14px}
+  .kpi .v{font-size:28px;font-weight:700;color:var(--magenta);font-variant-numeric:tabular-nums}
+  .kpi .l{font-size:12.5px;color:var(--gris)}
+  .dos{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:860px){.dos{grid-template-columns:1fr}}
+  .fila{display:grid;grid-template-columns:120px 1fr 64px;gap:10px;align-items:center;font-size:13px;margin:9px 0}
+  .fila .barra{height:18px;border-radius:6px}.fila .barra i{border-radius:6px}
+  .fila span:last-child{text-align:right;font-variant-numeric:tabular-nums;color:var(--gris)}
+  .est{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px}
+  .est.a{background:var(--ok-bg);color:#14573A}.est.b{background:var(--warn-bg);color:var(--warn)}.est.c{background:var(--alert-bg);color:var(--alert)}
+  .cita{border-left:4px solid var(--amarillo);background:var(--fondo);padding:10px 14px;border-radius:0 10px 10px 0;font-size:14px;margin-top:8px}
+  .estado{margin-left:auto;font-size:12.5px;background:rgba(255,255,255,.22);padding:6px 12px;border-radius:999px;font-weight:700}
+  .estado:empty{display:none}
+  .codigo{background:var(--fondo);border:1px dashed #bbb;border-radius:10px;padding:10px 14px;font-size:13.5px}
+  .codigo b{font-family:"Courier New",monospace;font-size:18px;letter-spacing:2px;color:var(--magenta)}
+  .iatxt{white-space:pre-line;font-size:13.5px;margin:8px 0 0}
+  .nps{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0}
+  .nps button{width:38px;height:38px;border:1px solid var(--linea);background:#fff;border-radius:8px;cursor:pointer;font-weight:700}
+  .nps button.on{background:var(--magenta);border-color:var(--magenta);color:#fff}
+  .err{color:var(--alert);font-size:13.5px;margin-top:8px}
+  .lista{font-size:13px;margin:6px 0 0;padding-left:18px}
+  a{color:var(--magenta)}
+  @media print{.estado,.aviso,header .toggle,.pasos,.acciones,.noprint{display:none!important}body{background:#fff}main{padding:0}.card{border:0}}
+</style>
+</head>
+<body>
+<div class="aviso" id="aviso" hidden></div>
+<header>
+  <div>
+    <h1>Ruta CX</h1>
+    <div class="sub">Taller Customer Experience: analítica y gestión de datos para startups</div>
+  </div>
+  <div class="estado" id="estado"></div>
+</header>
+<main id="app"></main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const SB_URL="https://kblmgecnjxdupmitsgwe.supabase.co", SB_KEY="sb_publishable_B-ZO_dQv8cnyRvNLVhB-pQ_Ewc-Qsme";
+const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY):null;
+const Q=new URLSearchParams(location.search), DEMO=Q.has("demo"), FAC=Q.has("facilitador");
+const GRUPO=Q.get("g")==="1"?"2026-10-14":Q.get("g")==="2"?"2026-10-20":Q.get("g")?Q.get("g").slice(0,20):(new Date()<new Date("2026-10-17T00:00:00-05:00")?"2026-10-14":"2026-10-20");
+const PASOS=['Ingreso','Recorrido','Métricas','Plan de datos','Plan 30-60-90','Mi ruta'];
+const VACIO={team:{name:'',sector:'',etapa:'',consent:false},
+  journey:[{etapa:'',accion:'',mv:false,dolor:''}],
+  norte:{name:'',formula:'',meta:''},
+  metrics:[{name:'',tipo:'Comportamiento',formula:'',meta:''}],
+  data:[{etapa:'',dato:'',herr:'',resp:'',personal:false,consent:false}],
+  plan:{ritual:'',d30:'',d60:'',d90:''}, sat:{}};
+const EJEMPLO={team:{name:'Kuna',sector:'Salud digital',etapa:'Prototipo con primeros usuarios',consent:true},
+  journey:[
+    {etapa:'Descubrimiento',accion:'Ve un video en redes y entra a la página',mv:false,dolor:'No entiende qué resuelve la app'},
+    {etapa:'Registro',accion:'Crea su cuenta y perfil de salud',mv:false,dolor:'Formulario largo'},
+    {etapa:'Primera cita',accion:'Agenda y asiste a su primera teleconsulta',mv:true,dolor:'El médico se conecta tarde'},
+    {etapa:'Seguimiento',accion:'Recibe la fórmula y el recordatorio',mv:true,dolor:''},
+    {etapa:'Recompra',accion:'Agenda una segunda cita',mv:false,dolor:''}],
+  norte:{name:'Descargas de la app',formula:'',meta:''},
+  metrics:[
+    {name:'Activación',tipo:'Comportamiento',formula:'Usuarios con 1ª cita / registrados',meta:'40 %'},
+    {name:'Retención a 60 días',tipo:'Comportamiento',formula:'Usuarios con 2ª cita en 60 días / usuarios con 1ª cita',meta:'30 %'},
+    {name:'Costo de adquisición',tipo:'Negocio',formula:'Gasto en mercadeo / clientes nuevos',meta:''}],
+  data:[
+    {etapa:'Registro',dato:'Correo, edad, motivo de consulta',herr:'Formulario de la app',resp:'Laura (producto)',personal:true,consent:false},
+    {etapa:'Primera cita',dato:'Hora de inicio real y duración',herr:'Base de datos',resp:'Andrés (tecnología)',personal:false,consent:false},
+    {etapa:'Seguimiento',dato:'Calificación de la cita (1 a 5)',herr:'Encuesta por WhatsApp',resp:'',personal:false,consent:false}],
+  plan:{ritual:'Lunes 8:00 a. m., 20 minutos: activación, retención y comentarios de la semana',d30:'Instrumentar los eventos de registro y primera cita',d60:'',d90:'Llegar a 30 % de retención a 60 días'},sat:{}};
+let S=JSON.parse(JSON.stringify(VACIO)), paso=0, modo=FAC?'fac':'equipo', iaVista={};
+let T={token:null,code:'',nps:null,npsComment:'',ai:{}}, err='', guardT=null, ocupado=false;
+const $=s=>document.querySelector(s);
+const e=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const inp=(k,v,ph='')=>`<input type="text" data-k="${k}" value="${e(v)}" placeholder="${e(ph)}">`;
+const chk=(k,v)=>`<input type="checkbox" data-k="${k}" ${v?'checked':''} style="accent-color:var(--magenta);width:18px;height:18px">`;
+function setK(path,val){const p=path.split('.');let o=S;for(let i=0;i<p.length-1;i++)o=o[p[i]];o[p.at(-1)]=val}
+
+/* Reglas de retroalimentación inmediata */
+function reglas(n){
+  const r=[],ok=t=>r.push({l:'ok',t}),w=t=>r.push({l:'warn',t}),a=t=>r.push({l:'alert',t});
+  const J=S.journey.filter(x=>x.etapa.trim());
+  if(n===1){
+    J.length>=4?ok(`Tienen ${J.length} etapas: el recorrido cubre antes, durante y después.`):w(`Van ${J.length} etapas. Lleguen al menos a 4, incluyendo qué pasa después de la primera compra o uso.`);
+    J.some(x=>x.mv)?ok('Marcaron momentos de verdad: ahí conviene medir primero.'):a('Ninguna etapa está marcada como momento de verdad. ¿En cuál se gana o se pierde al cliente?');
+    const d=J.filter(x=>x.dolor.trim()).length;
+    d>=2?ok(`Identificaron ${d} puntos de dolor.`):w('Describan el punto de dolor en al menos 2 etapas; pueden tomarlos de lo que hallaron en el Design Sprint.');
+    J.filter(x=>x.mv&&!x.dolor.trim()).forEach(x=>w(`"${x.etapa}" es momento de verdad pero no tiene punto de dolor descrito.`));
+  }
+  if(n===2){
+    const N=S.norte, M=S.metrics.filter(x=>x.name.trim());
+    if(!N.name.trim())a('Falta la métrica norte.');
+    else if(/descarga|visita|seguidor|like|registro|impresion|me gusta/i.test(N.name))a(`"${N.name}" es una métrica de vanidad: sube sin que el cliente reciba valor. Prueben con una que refleje uso repetido.`);
+    else ok('La métrica norte refleja valor entregado al cliente.');
+    N.formula.trim()?ok('La métrica norte tiene fórmula.'):w('Escriban cómo se calcula la métrica norte; sin fórmula, cada persona la medirá distinto.');
+    /\d/.test(N.meta)?ok('La métrica norte tiene meta numérica.'):w('Pongan una meta con número y plazo para la métrica norte.');
+    M.length>=3?ok(`Tienen ${M.length} métricas de apoyo.`):w('Agreguen entre 3 y 5 métricas que expliquen la métrica norte.');
+    M.some(x=>x.tipo==='Percepción')?ok('Incluyen una métrica de percepción.'):w('No hay métrica de percepción (NPS, CSAT o esfuerzo). Sin ella saben qué pasa, pero no por qué.');
+    M.filter(x=>!/\d/.test(x.meta)).forEach(x=>w(`"${x.name}" no tiene meta.`));
+  }
+  if(n===3){
+    const D=S.data.filter(x=>x.dato.trim());
+    D.length>=3?ok(`Planean capturar ${D.length} datos.`):w('Definan al menos 3 datos por capturar.');
+    const sin=J.filter(x=>x.mv&&!D.some(d=>d.etapa===x.etapa));
+    sin.length?sin.forEach(x=>a(`El momento de verdad "${x.etapa}" no tiene ningún dato asociado.`)):(J.some(x=>x.mv)&&ok('Todos los momentos de verdad tienen datos asociados.'));
+    D.filter(x=>x.personal&&!x.consent).forEach(x=>a(`"${x.dato}" es un dato personal sin autorización del titular (Ley 1581 de 2012).`));
+    D.filter(x=>!x.resp.trim()).forEach(x=>w(`"${x.dato}" no tiene responsable.`));
+    if(D.length&&D.every(x=>x.resp.trim()))ok('Cada dato tiene responsable.');
+  }
+  if(n===4){
+    const P=S.plan;
+    P.ritual.trim()?ok('Definieron un ritual de revisión.'):a('Falta el ritual: cuándo y quién revisa las métricas. Sin ritual, el tablero no se usa.');
+    [['d30','30'],['d60','60'],['d90','90']].forEach(([k,d])=>P[k].trim()?ok(`Hay acción a ${d} días.`):w(`Falta la acción a ${d} días.`));
+    if(P.d90.trim()&&!/\d/.test(P.d90))w('La acción a 90 días no tiene un resultado medible.');
+  }
+  return r;
+}
+const puntaje=n=>{const r=reglas(n);return r.length?Math.round(100*r.filter(x=>x.l==='ok').length/r.length):0};
+const ICON={ok:'✓',warn:'!',alert:'✕'};
+const IA={
+ 1:'El recorrido está bien enfocado en la primera cita, que es donde Kuna entrega su promesa. Falta mirar qué ocurre entre el registro y esa cita: si alguien se registra y no agenda, hoy no lo verían. Siguiente paso: agreguen la etapa "Agenda" y describan qué frena al usuario ahí.',
+ 2:'Las métricas de apoyo están bien construidas y tienen fórmula. El problema es la métrica norte: las descargas no dicen si alguien recibió atención. Una opción coherente con su recorrido es "citas completadas por semana". Agreguen además una calificación de la cita para entender las causas.',
+ 3:'Capturan lo necesario en la primera cita. El riesgo está en el registro: piden edad y motivo de consulta, que son datos sensibles de salud, sin autorización expresa. Añadan la casilla de autorización y guarden la fecha en que se aceptó.',
+ 4:'El ritual semanal es concreto y corto, lo cual ayuda a sostenerlo. El plan salta de 30 a 90 días: definan a 60 días una acción que conecte la instrumentación con la meta de retención, por ejemplo un recordatorio de segunda cita.'};
+
+function panel(n){
+  const r=reglas(n);
+  return `<aside><div class="card">
+    <h4>Retroalimentación inmediata <span class="punt">${puntaje(n)} / 100</span></h4>
+    <div id="fbList">${r.map(x=>`<div class="fb ${x.l}"><b>${ICON[x.l]}</b><span>${e(x.t)}</span></div>`).join('')}</div>
+    <div class="ia">
+      <button class="btn sec min" onclick="pedirIA(${n})">Pedir revisión con IA</button>
+      <div id="iaOut${n}">${iaBox(n)}</div>
+    </div>
+    <div class="ia"><label>¿Qué tan claro fue este taller?</label>
+      <div class="sat">${[1,2,3,4,5].map(v=>`<button class="${S.sat[n]===v?'on':''}" onclick="S.sat[${n}]=${v};render();programar()">${v}</button>`).join('')}</div>
+    </div>
+  </div></aside>`;
+}
+const iaBox=n=>{
+  if(DEMO)return iaVista[n]?`<p><span class="tag">Ejemplo simulado</span></p><p class="iatxt">${e(IA[n]||IA[1])}</p>`:'';
+  const a=T.ai[n]; let h=a&&a.text?`<p class="iatxt">${e(a.text)}</p>`:'';
+  if(a&&a.fail)h+=`<p class="err">${e(a.fail)}</p><button class="btn sec min" style="margin-top:8px" onclick="copiarPrompt(${n})">Copiar instrucción para su propia IA</button><p id="cp${n}" style="font-size:12.5px;color:var(--gris);margin:6px 0 0">Péguenla en ChatGPT, Claude o Gemini.</p>`;
+  return h;};
+function promptIA(n){
+  const foco={1:'el recorrido del cliente',2:'el árbol de métricas',3:'el plan de datos',4:'el ritual y el plan 30-60-90',5:'la ruta completa'}[n];
+  const datos=S.data.map(({resp,...d})=>d);
+  const t={1:{recorrido:S.journey},2:{metrica_norte:S.norte,metricas:S.metrics},3:{plan_de_datos:datos,recorrido:S.journey},4:{plan:S.plan,metrica_norte:S.norte},5:{recorrido:S.journey,metrica_norte:S.norte,metricas:S.metrics,plan_de_datos:datos,plan:S.plan}}[n];
+  return `Actúa como mentor de experiencia del cliente (CX) para una startup de ${S.team.sector||'base tecnológica'} en etapa "${S.team.etapa||'temprana'}". Revisa ${foco} con estos criterios: el recorrido se describe desde el cliente e incluye lo que pasa después de la primera compra; hay dos o tres momentos de verdad con su punto de dolor; la métrica norte refleja valor para el cliente y no es de vanidad; cada métrica tiene fórmula y meta; cada momento de verdad tiene un dato que lo mide; los datos personales tienen autorización; el ritual tiene día y responsable. Responde en tres párrafos cortos: lo que está bien, lo que falta y el siguiente paso. Máximo 120 palabras. No inventes datos.\n\nNuestro trabajo:\n${JSON.stringify(t,null,1)}`;}
+async function copiarPrompt(n){try{await navigator.clipboard.writeText(promptIA(n));const p=$('#cp'+n);if(p)p.textContent='Copiada. Péguenla en ChatGPT, Claude o Gemini.';if(T.token)sb.rpc('cx_event',{p_token:T.token,p_type:'prompt_copiado',p_step:n}).then(()=>{});}catch(_){prompt('Copien esta instrucción:',promptIA(n))}}
+async function pedirIA(n){
+  const out=$('#iaOut'+n); if(!out||ocupado)return;
+  if(DEMO){out.innerHTML='<p style="color:var(--gris)">Analizando su caso…</p>';setTimeout(()=>{iaVista[n]=true;out.innerHTML=iaBox(n)},900);return}
+  ocupado=true; out.innerHTML='<p style="color:var(--gris)">Analizando su caso… puede tardar unos segundos.</p>';
+  try{
+    await guardar();
+    const r=await fetch(SB_URL+'/functions/v1/feedback',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:JSON.stringify({token:T.token,step:n})});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok&&j.text)T.ai[n]={text:j.text};
+    else T.ai[n]={...(T.ai[n]||{}),fail:r.status===429?'La revisión con IA alcanzó su límite por ahora.':'La revisión con IA no está disponible en este momento.'};
+  }catch(_){T.ai[n]={...(T.ai[n]||{}),fail:'No hay conexión con la revisión con IA.'}}
+  ocupado=false; const o=$('#iaOut'+n); if(o)o.innerHTML=iaBox(n);
+}
+function refrescar(){ if(modo!=='equipo'||paso<1||paso>4)return;
+  const r=reglas(paso);$('#fbList').innerHTML=r.map(x=>`<div class="fb ${x.l}"><b>${ICON[x.l]}</b><span>${e(x.t)}</span></div>`).join('');
+  document.querySelector('aside .punt').textContent=puntaje(paso)+' / 100';}
+
+const nav=()=>`<div class="acciones">${paso>1?`<button class="btn sec" onclick="ir(${paso-1})">Anterior</button>`:'<span></span>'}<button class="btn" onclick="ir(${paso+1})">${paso===4?'Ver mi ruta':'Guardar y continuar'}</button></div>`;
+const fila=(arr,i)=>`<td class="x"><button class="quitar" title="Quitar fila" aria-label="Quitar fila" onclick="S.${arr}.splice(${i},1);render()">×</button></td>`;
+
+function vEquipo(){
+  const barra=paso===0?'':`<div class="pasos">${PASOS.map((p,i)=>i===0?'':`<button class="${i===paso?'on':''} ${i>0&&i<5&&i<paso?'hecho':''}" onclick="ir(${i})"><span class="n">${i===0?'·':i===5?'★':i}</span><span class="t">${p}</span></button>`).join('')}</div>`;
+  let c='';
+  if(paso===0)c=`<div class="card" style="max-width:720px;margin:0 auto">
+    <h2>Bienvenidos al taller</h2>
+    <p class="lead">En las próximas horas van a construir la Ruta de Experiencia y Datos del Cliente de su startup. Todo se guarda solo y al final la descargan en PDF. Una ruta por startup.</p>
+    <div class="f2"><div><label for="fN">Nombre de la startup</label><input type="text" id="fN" data-k="team.name" value="${e(S.team.name)}" maxlength="80" placeholder="Ej.: Kuna"></div>
+    <div><label for="fS">Sector</label><input type="text" id="fS" data-k="team.sector" value="${e(S.team.sector)}" maxlength="80" placeholder="Ej.: Salud digital"></div></div>
+    <div style="margin-top:12px"><label for="fE">Etapa actual</label><select id="fE" data-k="team.etapa">${['','Idea validada','Prototipo con primeros usuarios','Primeras ventas','Ventas recurrentes'].map(o=>`<option ${S.team.etapa===o?'selected':''}>${o}</option>`).join('')}</select></div>
+    <label class="check">${chk('team.consent',S.team.consent)}<span>Autorizo el tratamiento de la información que registre en esta herramienta para el desarrollo del taller y su análisis agregado, según la <a href="privacidad.html" target="_blank" rel="noopener">política de tratamiento de datos</a>. No escriban aquí datos personales de sus clientes.</span></label>
+    ${err?`<p class="err">${e(err)}</p>`:''}
+    <div class="acciones"><span></span><button class="btn" onclick="crear()">Empezar</button></div>
+    <div class="ia"><label for="fC">¿Ya habían empezado? Entren con su código</label>
+      <div style="display:flex;gap:8px;max-width:340px"><input type="text" id="fC" maxlength="6" placeholder="ABC123" style="text-transform:uppercase"><button class="btn sec" onclick="recuperar()">Entrar</button></div></div></div>`;
+  if(paso===1)c=`<div class="grid"><div class="card"><h2>Taller 1 · Recorrido del cliente</h2>
+    <p class="lead">Partan de su prototipo: ¿qué pasos vive el cliente desde que los conoce hasta que vuelve? Marquen los momentos de verdad, donde se gana o se pierde la relación.</p>
+    <div class="tabla"><table><tr><th>Etapa</th><th>Qué hace el cliente</th><th class="c">Momento de verdad</th><th>Punto de dolor</th><th></th></tr>
+    ${S.journey.map((x,i)=>`<tr><td>${inp(`journey.${i}.etapa`,x.etapa,'Etapa')}</td><td>${inp(`journey.${i}.accion`,x.accion,'Acción')}</td><td class="c">${chk(`journey.${i}.mv`,x.mv)}</td><td>${inp(`journey.${i}.dolor`,x.dolor,'¿Qué le molesta?')}</td>${fila('journey',i)}</tr>`).join('')}
+    </table></div><button class="btn sec min" onclick="S.journey.push({etapa:'',accion:'',mv:false,dolor:''});render()">+ Agregar etapa</button>${nav()}</div>${panel(1)}</div>`;
+  if(paso===2)c=`<div class="grid"><div class="card"><h2>Taller 2 · Árbol de métricas</h2>
+    <p class="lead">Una métrica norte que refleje el valor que recibe el cliente, y de tres a cinco métricas que la expliquen.</p>
+    <h3>Métrica norte</h3><div class="f3"><div><label>Nombre</label>${inp('norte.name',S.norte.name,'Ej.: Citas completadas por semana')}</div><div><label>Fórmula</label>${inp('norte.formula',S.norte.formula,'Cómo se calcula')}</div><div><label>Meta</label>${inp('norte.meta',S.norte.meta,'Ej.: 120')}</div></div>
+    <h3>Métricas que la explican</h3><div class="tabla"><table><tr><th>Métrica</th><th>Tipo</th><th>Fórmula</th><th>Meta</th><th></th></tr>
+    ${S.metrics.map((x,i)=>`<tr><td>${inp(`metrics.${i}.name`,x.name,'Nombre')}</td><td><select data-k="metrics.${i}.tipo">${['Percepción','Comportamiento','Negocio'].map(o=>`<option ${x.tipo===o?'selected':''}>${o}</option>`).join('')}</select></td><td>${inp(`metrics.${i}.formula`,x.formula,'Numerador / denominador')}</td><td style="width:110px">${inp(`metrics.${i}.meta`,x.meta,'Meta')}</td>${fila('metrics',i)}</tr>`).join('')}
+    </table></div><button class="btn sec min" onclick="S.metrics.push({name:'',tipo:'Percepción',formula:'',meta:''});render()">+ Agregar métrica</button>${nav()}</div>${panel(2)}</div>`;
+  if(paso===3){const et=S.journey.filter(x=>x.etapa.trim()).map(x=>x.etapa);
+    c=`<div class="grid"><div class="card"><h2>Taller 3 · Plan de datos</h2>
+    <p class="lead">Para cada etapa del recorrido: qué dato capturan, con qué herramienta y quién responde. Si es un dato personal, necesitan autorización.</p>
+    <div class="tabla"><table><tr><th>Etapa</th><th>Dato</th><th>Herramienta</th><th>Responsable</th><th class="c">Dato personal</th><th class="c">Autorización</th><th></th></tr>
+    ${S.data.map((x,i)=>`<tr><td><select data-k="data.${i}.etapa"><option></option>${et.map(o=>`<option ${x.etapa===o?'selected':''}>${e(o)}</option>`).join('')}</select></td><td>${inp(`data.${i}.dato`,x.dato,'Qué se guarda')}</td><td>${inp(`data.${i}.herr`,x.herr,'Dónde')}</td><td>${inp(`data.${i}.resp`,x.resp,'Quién')}</td><td class="c">${chk(`data.${i}.personal`,x.personal)}</td><td class="c">${chk(`data.${i}.consent`,x.consent)}</td>${fila('data',i)}</tr>`).join('')}
+    </table></div><button class="btn sec min" onclick="S.data.push({etapa:'',dato:'',herr:'',resp:'',personal:false,consent:false});render()">+ Agregar dato</button>${nav()}</div>${panel(3)}</div>`;}
+  if(paso===4)c=`<div class="grid"><div class="card"><h2>Taller 4 · Tablero mínimo y plan 30-60-90</h2>
+    <p class="lead">Las métricas solo sirven si alguien las revisa y decide. Definan el ritual y las tres primeras acciones.</p>
+    <label>Ritual de revisión: cuándo, cuánto dura y qué se mira</label><textarea data-k="plan.ritual">${e(S.plan.ritual)}</textarea>
+    <h3>Acciones</h3>
+    <label>A 30 días</label><textarea data-k="plan.d30">${e(S.plan.d30)}</textarea>
+    <label style="margin-top:10px">A 60 días</label><textarea data-k="plan.d60">${e(S.plan.d60)}</textarea>
+    <label style="margin-top:10px">A 90 días</label><textarea data-k="plan.d90">${e(S.plan.d90)}</textarea>${nav()}</div>${panel(4)}</div>`;
+  if(paso===5)c=vRuta();
+  return barra+c;
+}
+function vRuta(){
+  const dims=[['Recorrido',1],['Métricas',2],['Plan de datos',3],['Plan de acción',4]];
+  const tot=Math.round(dims.reduce((s,d)=>s+puntaje(d[1]),0)/4);
+  const pend=[1,2,3,4].flatMap(n=>reglas(n).filter(x=>x.l!=='ok').map(x=>({...x,n})));
+  return `<div class="card">
+   <div class="ruta-head"><div><h2>Ruta de Experiencia y Datos del Cliente</h2><p class="lead" style="margin:0"><b>${e(S.team.name||'Su startup')}</b> · ${e(S.team.sector||'Sector')} · ${e(S.team.etapa||'Etapa')}</p></div>
+   <div class="noprint" style="display:flex;gap:8px"><button class="btn sec" onclick="ir(4)">Editar</button><button class="btn" onclick="pdf()">Descargar PDF</button></div></div>
+   <h3>Madurez de la ruta · ${tot} / 100</h3>
+   ${dims.map(([l,n])=>`<div class="dim"><span>${l}</span><div class="barra"><i style="width:${puntaje(n)}%"></i></div><span style="text-align:right">${puntaje(n)}</span></div>`).join('')}
+   <h3>1. Recorrido del cliente</h3>
+   <div class="chips">${S.journey.filter(x=>x.etapa.trim()).map(x=>`<div class="chip ${x.mv?'mv':''}">${e(x.etapa)}${x.mv?' ★':''}<small>${e(x.dolor||'Sin dolor identificado')}</small></div>`).join('')||'<span class="lead">Sin etapas todavía.</span>'}</div>
+   <p style="font-size:12px;color:var(--gris);margin:6px 0 0">★ Momento de verdad</p>
+   <h3>2. Árbol de métricas</h3>
+   <div class="norte"><div style="font-size:12px;opacity:.9">Métrica norte</div><div class="v">${e(S.norte.name||'Por definir')}</div><div style="font-size:13px">${e(S.norte.formula||'Sin fórmula')} · Meta: ${e(S.norte.meta||'sin definir')}</div></div>
+   <table class="mini" style="margin-top:8px"><tr><th>Métrica</th><th>Tipo</th><th>Fórmula</th><th>Meta</th></tr>${S.metrics.filter(x=>x.name.trim()).map(x=>`<tr><td>${e(x.name)}</td><td>${e(x.tipo)}</td><td>${e(x.formula)}</td><td>${e(x.meta||'—')}</td></tr>`).join('')}</table>
+   <h3>3. Plan de datos</h3>
+   <table class="mini"><tr><th>Etapa</th><th>Dato</th><th>Herramienta</th><th>Responsable</th><th>Autorización</th></tr>${S.data.filter(x=>x.dato.trim()).map(x=>`<tr><td>${e(x.etapa)}</td><td>${e(x.dato)}</td><td>${e(x.herr)}</td><td>${e(x.resp||'—')}</td><td>${x.personal?(x.consent?'Sí':'<b style="color:var(--alert)">Falta</b>'):'No aplica'}</td></tr>`).join('')}</table>
+   <h3>4. Ritual y plan 30-60-90</h3>
+   <p style="margin:0 0 8px;font-size:14px">${e(S.plan.ritual||'Ritual sin definir.')}</p>
+   <div class="tres"><div><b>30 días</b>${e(S.plan.d30||'—')}</div><div><b>60 días</b>${e(S.plan.d60||'—')}</div><div><b>90 días</b>${e(S.plan.d90||'—')}</div></div>
+   <h3>Pendientes para la próxima semana (${pend.length})</h3>
+   ${pend.slice(0,8).map(x=>`<div class="fb ${x.l}"><b>${ICON[x.l]}</b><span>${e(x.t)}</span></div>`).join('')||'<div class="fb ok"><b>✓</b><span>Ruta completa. Revísenla de nuevo cuando tengan sus primeros 20 clientes.</span></div>'}
+   ${extras()}
+  </div>`;
+}
+function extras(){
+  return `<div class="noprint">
+   <h3>Revisión de la ruta completa con IA</h3>
+   <button class="btn sec min" onclick="pedirIA(5)">Pedir revisión con IA</button><div id="iaOut5">${iaBox(5)}</div>
+   <h3>Antes de irse: ¿qué tan probable es que recomienden este taller a otro emprendedor?</h3>
+   <div class="nps">${[0,1,2,3,4,5,6,7,8,9,10].map(v=>`<button class="${T.nps===v?'on':''}" onclick="T.nps=${v};render()">${v}</button>`).join('')}</div>
+   <label for="fNps">¿Cuál es la razón principal de su respuesta?</label><textarea id="fNps" oninput="T.npsComment=this.value" maxlength="600">${e(T.npsComment)}</textarea>
+   <div style="margin-top:8px;display:flex;gap:10px;align-items:center"><button class="btn min" onclick="enviarNps()">Enviar respuesta</button><span id="npsOk" style="font-size:13px;color:var(--ok)"></span></div>
+   ${T.code?`<div class="codigo" style="margin-top:18px">Su código para volver a esta ruta desde cualquier equipo: <b>${e(T.code)}</b></div>`:''}
+  </div>`;
+}
+/* ---------- Guardado ---------- */
+const estado=t=>{const el=$('#estado'); if(el)el.textContent=t};
+const puntajes=()=>({1:puntaje(1),2:puntaje(2),3:puntaje(3),4:puntaje(4),alertas:[1,2,3,4].reduce((s,n)=>s+reglas(n).filter(x=>x.l==='alert').length,0)});
+function programar(){ if(DEMO||!T.token)return; try{localStorage.setItem('cx_state',JSON.stringify(S))}catch(_){}; estado('Guardando…'); clearTimeout(guardT); guardT=setTimeout(guardar,1500); }
+async function guardar(){
+  if(DEMO||!T.token||!sb)return; clearTimeout(guardT);
+  const {error}=await sb.rpc('cx_save',{p_token:T.token,p_state:S,p_step:Math.max(1,Math.min(5,paso)),p_sat:S.sat||{},p_scores:puntajes()});
+  estado(error?'Sin conexión: se guarda en este equipo':`${S.team.name} · guardado`);
+}
+async function crear(){
+  err=''; if(!S.team.name.trim())err='Escriban el nombre de la startup.'; else if(!S.team.consent)err='Para continuar deben aceptar la autorización de tratamiento de datos.';
+  if(err)return render();
+  if(DEMO){paso=1;return render()}
+  if(ocupado)return; ocupado=true;
+  const {data,error}=await sb.rpc('cx_create_team',{p_name:S.team.name,p_sector:S.team.sector,p_etapa:S.team.etapa,p_grupo:GRUPO,p_consent:true});
+  ocupado=false;
+  if(error||!data){err='No pudimos crear su ruta. Revisen la conexión e intenten de nuevo.';return render()}
+  T.token=data.token;T.code=data.code; try{localStorage.setItem('cx_token',T.token)}catch(_){}
+  paso=1; render(); guardar();
+}
+async function cargarEquipo(token){
+  const {data,error}=await sb.rpc('cx_get_team',{p_token:token});
+  if(error)return 'red'; if(!data)return 'no';
+  const st=data.state&&data.state.journey?data.state:JSON.parse(JSON.stringify(VACIO));
+  S={...JSON.parse(JSON.stringify(VACIO)),...st}; S.team={name:data.name,sector:data.sector||'',etapa:data.etapa||'',consent:true}; S.sat=data.sat||S.sat||{};
+  T={token,code:data.code,nps:data.nps,npsComment:data.nps_comment||'',ai:data.ai||{}}; paso=data.step||1; return 'ok';
+}
+async function recuperar(){
+  const c=($('#fC').value||'').trim().toUpperCase(); if(c.length!==6){err='El código tiene 6 caracteres.';return render()}
+  const {data}=await sb.rpc('cx_recover',{p_code:c});
+  if(!data||!data.token){err='No encontramos una ruta con ese código.';return render()}
+  if(await cargarEquipo(data.token)==='ok'){try{localStorage.setItem('cx_token',data.token)}catch(_){}; err=''; render(); estado(S.team.name+' · guardado')}
+}
+async function enviarNps(){ if(T.nps===null||T.nps===undefined){$('#npsOk').textContent='Elijan un número de 0 a 10.';return}
+  if(!DEMO&&T.token)await sb.rpc('cx_nps',{p_token:T.token,p_nps:T.nps,p_comment:T.npsComment}); $('#npsOk').textContent='Gracias, respuesta registrada.'; }
+async function pdf(){ if(!DEMO&&T.token){await guardar(); sb.rpc('cx_event',{p_token:T.token,p_type:'pdf',p_step:5}).then(()=>{})} window.print(); }
+
+/* ---------- Facilitador ---------- */
+let F={pass:'',grupo:GRUPO,d:null,err:'',proy:true,timer:null};
+const NOM={1:'Recorrido',2:'Métricas',3:'Plan de datos',4:'Plan 30-60-90',5:'Mi ruta'};
+const VAN=/descarga|visita|seguidor|like|registro|impresion|me gusta/i;
+async function facCargar(){
+  const {data,error}=await sb.rpc('cx_dashboard',{p_pass:F.pass,p_grupo:F.grupo});
+  if(error){F.err=/unauthorized/.test(error.message)?'Clave incorrecta.':'No se pudo cargar el tablero.';F.d=null;if(/unauthorized/.test(error.message)){F.pass='';clearInterval(F.timer)}}
+  else{F.d=data;F.err='';try{sessionStorage.setItem('cx_fac',F.pass)}catch(_){}}
+  render();
+}
+function facEntrar(){F.pass=$('#fP').value;clearInterval(F.timer);F.timer=setInterval(facCargar,20000);facCargar()}
+function vFac(){
+  if(!F.d)return `<div class="card" style="max-width:420px;margin:40px auto"><h2>Tablero del facilitador</h2><p class="lead">Ingresen la clave para ver los datos del taller.</p>
+    <label for="fP">Clave</label><input type="password" id="fP" style="width:100%;border:1px solid #cfcfcf;border-radius:8px;padding:8px 10px" onkeydown="if(event.key==='Enter')facEntrar()">
+    ${F.err?`<p class="err">${e(F.err)}</p>`:''}<div class="acciones"><span></span><button class="btn" onclick="facEntrar()">Entrar</button></div></div>`;
+  const d=F.d, tot=d.total||0, fu=d.funnel||[], fin=(fu.find(x=>x.step===5)||{}).n||0;
+  const sat=d.sat||[], sv=sat.filter(x=>x.avg!==null), satAvg=sv.length?(sv.reduce((s,x)=>s+Number(x.avg)*x.n,0)/sv.reduce((s,x)=>s+x.n,0)):null;
+  const det=(d.teams||[]).filter(t=>t.max_step<5&&t.idle_min>10&&t.idle_min<180);
+  const nor=(d.teams||[]).map(t=>(t.norte||'').trim()), van=nor.filter(x=>x&&VAN.test(x)).length, val=nor.filter(x=>x&&!VAN.test(x)).length, sin=nor.filter(x=>!x).length;
+  const mins=Object.fromEntries((d.mins||[]).map(x=>[x.step,x.min]));
+  const nps=d.nps&&d.nps.n?Math.round(100*(d.nps.prom-d.nps.det)/d.nps.n):null;
+  const pct=n=>tot?Math.round(100*n/tot):0, co=v=>v===null||v===undefined?'—':String(v).replace('.',',');
+  const grupos=[...new Set([...(d.grupos||[]),F.grupo])];
+  return `<div class="noprint" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:14px;font-size:13.5px">
+     <label style="margin:0">Grupo <select style="width:auto;display:inline-block" onchange="F.grupo=this.value;facCargar()">${grupos.map(g=>`<option ${g===F.grupo?'selected':''}>${e(g)}</option>`).join('')}</select></label>
+     <label style="margin:0;display:flex;gap:6px;align-items:center;font-weight:400;color:var(--tinta)"><input type="checkbox" ${F.proy?'checked':''} onchange="F.proy=this.checked;render()"> Modo proyección: ocultar el detalle por equipo</label>
+     <span style="color:var(--gris)">Se actualiza cada 20 segundos · IA: ${d.ai_calls} revisiones</span></div>
+   <div class="kpis">
+    <div class="kpi"><div class="v">${tot}</div><div class="l">Equipos conectados</div></div>
+    <div class="kpi"><div class="v">${pct(fin)} %</div><div class="l">Llegaron a «Mi ruta» (${fin} de ${tot})</div></div>
+    <div class="kpi"><div class="v">${satAvg===null?'—':co(satAvg.toFixed(1))}</div><div class="l">Claridad promedio, de 1 a 5</div></div>
+    <div class="kpi"><div class="v">${det.length}</div><div class="l">Equipos sin avance hace más de 10 min</div></div></div>
+   <div class="dos">
+    <div class="card"><h2 style="font-size:17px">Embudo del taller</h2><p class="lead" style="font-size:13px">Equipos que llegaron a cada paso.</p>
+      ${fu.map(x=>`<div class="fila"><span>${NOM[x.step]}</span><div class="barra"><i style="width:${pct(x.n)}%"></i></div><span>${x.n} · ${pct(x.n)} %</span></div>`).join('')}
+      <div class="fila"><span>PDF descargado</span><div class="barra"><i style="width:${pct(d.pdf)}%;background:var(--gris)"></i></div><span>${d.pdf} · ${pct(d.pdf)} %</span></div></div>
+    <div class="card"><h2 style="font-size:17px">Claridad y tiempo por taller</h2><p class="lead" style="font-size:13px">Respuesta a «¿qué tan claro fue este taller?» y minutos (mediana) hasta pasar al siguiente.</p>
+      ${sat.map(x=>`<div class="fila"><span>Taller ${x.step}</span><div class="barra"><i style="width:${x.avg?x.avg/5*100:0}%;background:var(--naranja)"></i></div><span>${co(x.avg)} · ${co(mins[x.step])} min</span></div>`).join('')}</div>
+    <div class="card"><h2 style="font-size:17px">Qué eligieron como métrica norte</h2>
+      ${[['De valor para el cliente',val,'var(--magenta)'],['De vanidad',van,'var(--gris)'],['Sin definir',sin,'var(--linea)']].map(([l,v,c])=>`<div class="fila"><span>${l}</span><div class="barra"><i style="width:${pct(v)}%;background:${c}"></i></div><span>${v}</span></div>`).join('')}
+      <ul class="lista">${nor.filter(Boolean).slice(0,12).map(x=>`<li>${e(x)}</li>`).join('')}</ul></div>
+    <div class="card"><h2 style="font-size:17px">Recomendación del taller</h2>
+      <div class="kpi" style="border:0;padding:0"><div class="v">${nps===null?'—':nps}</div><div class="l">NPS con ${d.nps?d.nps.n:0} respuestas</div></div>
+      <ul class="lista">${(d.comentarios||[]).slice(0,10).map(x=>`<li>${e(x)}</li>`).join('')||'<li style="list-style:none;margin-left:-18px;color:var(--gris)">Aún no hay comentarios.</li>'}</ul></div>
+   </div>
+   ${F.proy?'':`<div class="card" style="margin-top:16px"><h2 style="font-size:17px">Equipos</h2><div class="tabla"><table class="mini" style="min-width:560px"><tr><th>Startup</th><th>Sector</th><th>Paso</th><th>Estado</th><th>Alertas</th><th>Métrica norte</th></tr>
+     ${(d.teams||[]).map(t=>`<tr><td><b>${e(t.name)}</b></td><td>${e(t.sector||'')}</td><td>${NOM[t.step]||''}</td><td><span class="est ${t.max_step>=5?'a':t.idle_min>10?'c':'a'}">${t.max_step>=5?'En Mi ruta':t.idle_min>10?'Sin avance '+t.idle_min+' min':'Avanzando'}</span></td><td>${t.alertas??''}</td><td>${e(t.norte||'')}</td></tr>`).join('')}</table></div></div>`}`;
+}
+function render(){ $('#app').innerHTML=modo==='equipo'?vEquipo():vFac(); }
+function ir(n){paso=Math.max(T.token||DEMO?1:0,Math.min(5,n));render();scrollTo(0,0);if(T.token){clearTimeout(guardT);guardar()}}
+document.addEventListener('input',ev=>{const k=ev.target.dataset.k;if(!k)return;setK(k,ev.target.type==='checkbox'?ev.target.checked:ev.target.value);refrescar();programar()});
+document.addEventListener('click',ev=>{if(ev.target.closest('.quitar,.btn.sec.min'))programar()});
+window.addEventListener('beforeunload',()=>{if(T.token)guardar()});
+(async function init(){
+  if(!sb&&!DEMO){$('#app').innerHTML='<div class="card"><h2>No se pudo cargar la herramienta</h2><p class="lead">Revisen su conexión y recarguen la página.</p></div>';return}
+  if(DEMO){const a=$('#aviso');a.hidden=false;a.textContent='Modo demostración · startup de ejemplo · nada se guarda';S=JSON.parse(JSON.stringify(EJEMPLO));paso=1;return render()}
+  if(FAC){try{F.pass=sessionStorage.getItem('cx_fac')||''}catch(_){}; if(F.pass){F.timer=setInterval(facCargar,20000);return facCargar()} return render()}
+  let tk=null; try{tk=localStorage.getItem('cx_token')}catch(_){}
+  if(tk){const r=await cargarEquipo(tk); if(r==='ok'){render();estado(S.team.name+' · guardado');return}
+    if(r==='red'){try{const b=JSON.parse(localStorage.getItem('cx_state'));if(b){S=b;T.token=tk;paso=1;render();estado('Sin conexión: se guarda en este equipo');return}}catch(_){}}
+    if(r==='no'){try{localStorage.removeItem('cx_token')}catch(_){}}}
+  render();
+})();
+</script>
+</body>
+</html>
