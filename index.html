@@ -427,7 +427,7 @@ function vFac(){
    ${F.proy?'':`<div class="card" style="margin-top:16px"><h2 style="font-size:17px">Equipos</h2><div class="tabla"><table class="mini" style="min-width:560px"><tr><th>Startup</th><th>Sector</th><th>Paso</th><th>Estado</th><th>Alertas</th><th>Métrica norte</th></tr>
      ${(d.teams||[]).map(t=>`<tr><td><b>${e(t.name)}</b></td><td>${e(t.sector||'')}</td><td>${NOM[t.step]||''}</td><td><span class="est ${t.max_step>=5?'a':t.idle_min>10?'c':'a'}">${t.max_step>=5?'En Mi ruta':t.idle_min>10?'Sin avance '+t.idle_min+' min':'Avanzando'}</span></td><td>${t.alertas??''}</td><td>${e(t.norte||'')}</td></tr>`).join('')}</table></div></div>`}`;
 }
-function render(){ $('#app').innerHTML=modo==='equipo'?vEquipo():vFac(); }
+function render(){ $('#app').innerHTML=modo==='equipo'?vEquipo():vFac(); const b=$('#salir'); if(b)b.hidden=!T.token||modo!=='equipo'; }
 function ir(n){paso=Math.max(T.token||DEMO?1:0,Math.min(5,n));render();scrollTo(0,0);if(T.token){clearTimeout(guardT);guardar()}}
 document.addEventListener('input',ev=>{const k=ev.target.dataset.k;if(!k)return;setK(k,ev.target.type==='checkbox'?ev.target.checked:ev.target.value);refrescar();programar()});
 document.addEventListener('click',ev=>{if(ev.target.closest('.quitar,.btn.sec.min'))programar()});
