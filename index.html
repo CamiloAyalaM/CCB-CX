@@ -266,7 +266,7 @@ function vEquipo(){
     <label class="check">${chk('team.consent',S.team.consent)}<span>Autorizo el tratamiento de la información que registre en esta herramienta para el desarrollo del taller y su análisis agregado, según la <a href="privacidad.html" target="_blank" rel="noopener">política de tratamiento de datos</a>. No escriban aquí datos personales de sus clientes.</span></label>
     ${err?`<p class="err">${e(err)}</p>`:''}
     <div class="acciones"><span></span><button class="btn" onclick="crear()">Empezar</button></div>
-    <div class="ia"><label for="fC">¿Ya habían empezado? Entren con su código</label>
+    <div class="ia"><label for="fC">¿Ya habían empezado en otro equipo o navegador? Entren con el código de 6 caracteres que aparece arriba a la derecha de su ruta</label>
       <div style="display:flex;gap:8px;max-width:340px"><input type="text" id="fC" maxlength="6" placeholder="ABC123" style="text-transform:uppercase"><button class="btn sec" onclick="recuperar()">Entrar</button></div></div></div>`;
   if(paso===1)c=`<div class="grid"><div class="card"><h2>Taller 1 · Recorrido del cliente</h2>
     <p class="lead">Partan de su prototipo: ¿qué pasos vive el cliente desde que los conoce hasta que vuelve? Marquen los momentos de verdad, donde se gana o se pierde la relación.</p>
@@ -333,12 +333,13 @@ function extras(){
 }
 /* ---------- Guardado ---------- */
 const estado=t=>{const el=$('#estado'); if(el)el.textContent=t};
+const okTxt=()=>`${S.team.name} · código ${T.code} · guardado`;
 const puntajes=()=>({1:puntaje(1),2:puntaje(2),3:puntaje(3),4:puntaje(4),alertas:[1,2,3,4].reduce((s,n)=>s+reglas(n).filter(x=>x.l==='alert').length,0)});
 function programar(){ if(DEMO||!T.token)return; try{localStorage.setItem('cx_state',JSON.stringify(S))}catch(_){}; estado('Guardando…'); clearTimeout(guardT); guardT=setTimeout(guardar,1500); }
 async function guardar(){
   if(DEMO||!T.token||!sb)return; clearTimeout(guardT);
   const {error}=await sb.rpc('cx_save',{p_token:T.token,p_state:S,p_step:Math.max(1,Math.min(5,paso)),p_sat:S.sat||{},p_scores:puntajes()});
-  estado(error?'Sin conexión: se guarda en este equipo':`${S.team.name} · guardado`);
+  estado(error?'Sin conexión: se guarda en este equipo':okTxt());
 }
 async function crear(){
   err=''; if(!S.team.name.trim())err='Escriban el nombre de la startup.'; else if(!S.team.consent)err='Para continuar deben aceptar la autorización de tratamiento de datos.';
@@ -362,7 +363,7 @@ async function recuperar(){
   const c=($('#fC').value||'').trim().toUpperCase(); if(c.length!==6){err='El código tiene 6 caracteres.';return render()}
   const {data}=await sb.rpc('cx_recover',{p_code:c});
   if(!data||!data.token){err='No encontramos una ruta con ese código.';return render()}
-  if(await cargarEquipo(data.token)==='ok'){try{localStorage.setItem('cx_token',data.token)}catch(_){}; err=''; render(); estado(S.team.name+' · guardado')}
+  if(await cargarEquipo(data.token)==='ok'){try{localStorage.setItem('cx_token',data.token)}catch(_){}; err=''; render(); estado(okTxt())}
 }
 async function enviarNps(){ if(T.nps===null||T.nps===undefined){$('#npsOk').textContent='Elijan un número de 0 a 10.';return}
   if(!DEMO&&T.token)await sb.rpc('cx_nps',{p_token:T.token,p_nps:T.nps,p_comment:T.npsComment}); $('#npsOk').textContent='Gracias, respuesta registrada.'; }
@@ -426,7 +427,7 @@ window.addEventListener('beforeunload',()=>{if(T.token)guardar()});
   if(DEMO){const a=$('#aviso');a.hidden=false;a.textContent='Modo demostración · startup de ejemplo · nada se guarda';S=JSON.parse(JSON.stringify(EJEMPLO));paso=1;return render()}
   if(FAC){try{F.pass=sessionStorage.getItem('cx_fac')||''}catch(_){}; if(F.pass){F.timer=setInterval(facCargar,20000);return facCargar()} return render()}
   let tk=null; try{tk=localStorage.getItem('cx_token')}catch(_){}
-  if(tk){const r=await cargarEquipo(tk); if(r==='ok'){render();estado(S.team.name+' · guardado');return}
+  if(tk){const r=await cargarEquipo(tk); if(r==='ok'){render();estado(okTxt());return}
     if(r==='red'){try{const b=JSON.parse(localStorage.getItem('cx_state'));if(b){S=b;T.token=tk;paso=1;render();estado('Sin conexión: se guarda en este equipo');return}}catch(_){}}
     if(r==='no'){try{localStorage.removeItem('cx_token')}catch(_){}}}
   render();
