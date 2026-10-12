@@ -331,8 +331,8 @@ function extras(){
    <div class="nps">${[0,1,2,3,4,5,6,7,8,9,10].map(v=>`<button class="${T.nps===v?'on':''}" onclick="T.nps=${v};render()">${v}</button>`).join('')}</div>
    <label for="fNps">¿Cuál es la razón principal de su respuesta?</label><textarea id="fNps" oninput="T.npsComment=this.value" maxlength="600">${e(T.npsComment)}</textarea>
    <div style="margin-top:8px;display:flex;gap:10px;align-items:center"><button class="btn min" onclick="enviarNps()">Enviar respuesta</button><span id="npsOk" style="font-size:13px;color:var(--ok)"></span></div>
-   ${T.code?`<div class="codigo" style="margin-top:18px">Su código para volver a esta ruta desde cualquier equipo: <b>${e(T.code)}</b></div>`:''}
-  </div>`;
+  </div>
+  ${T.code?`<div class="codigo" style="margin-top:18px">Código de esta ruta: <b>${e(T.code)}</b> · Para volver a ella, entren a camiloayalam.github.io/CCB-CX y escríbanlo en «Entren con su código».</div>`:''}`;
 }
 /* ---------- Guardado ---------- */
 const estado=t=>{const el=$('#estado'); if(el)el.textContent=t; const b=$('#salir'); if(b)b.hidden=!T.token};
