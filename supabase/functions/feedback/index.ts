@@ -72,7 +72,9 @@ Deno.serve(async (req: Request) => {
   const payload = { startup: { sector: team.sector, etapa: team.etapa }, trabajo: partes[String(step)] };
 
   try {
-    const client = new Anthropic();
+    // Si la clave no pertenece a un espacio de trabajo, se puede indicar uno con el secreto ANTHROPIC_WORKSPACE_ID.
+    const ws = Deno.env.get("ANTHROPIC_WORKSPACE_ID");
+    const client = new Anthropic(ws ? { defaultHeaders: { "anthropic-workspace-id": ws } } : {});
     const res = await client.messages.create({
       model: MODEL,
       max_tokens: 1500,
@@ -92,7 +94,7 @@ Deno.serve(async (req: Request) => {
   } catch (err) {
     if (err instanceof Anthropic.RateLimitError) return json({ error: "rate_limit" }, 429);
     if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError) return json({ error: "no_key" }, 503);
-    if (err instanceof Anthropic.APIError) return json({ error: "api", status: err.status }, 502);
+    if (err instanceof Anthropic.APIError) return json({ error: "api", status: err.status, message: String(err.message).slice(0, 300) }, 502);
     return json({ error: "unknown" }, 500);
   }
 });
