@@ -4,7 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 // Siempre el modelo más económico.
 const MODEL = "claude-haiku-5-5";
-const MAX_PER_STEP = 2;
+const MAX_PER_STEP = 5;
 
 const cors = {
   "Access-Control-Allow-Origin": "*",

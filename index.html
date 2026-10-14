@@ -245,7 +245,7 @@ async function pedirIA(n){
     await guardar();
     const r=await fetch(SB_URL+'/functions/v1/feedback',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:JSON.stringify({token:T.token,step:n})});
     const j=await r.json().catch(()=>({}));
-    if(r.ok&&j.text)T.ai[n]={text:j.text};
+    if(r.ok&&j.text)T.ai[n]=j.limit?{text:j.text,fail:'Ya usaron todas las revisiones con IA de este paso; esta es la última que recibieron. Pueden copiar la instrucción y usarla en su propia IA.'}:{text:j.text};
     else T.ai[n]={...(T.ai[n]||{}),fail:r.status===429?'La revisión con IA alcanzó su límite por ahora.':'La revisión con IA no está disponible en este momento.'};
   }catch(_){T.ai[n]={...(T.ai[n]||{}),fail:'No hay conexión con la revisión con IA.'}}
   ocupado=false; const o=$('#iaOut'+n); if(o)o.innerHTML=iaBox(n);
