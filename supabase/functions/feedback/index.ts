@@ -77,7 +77,7 @@ Deno.serve(async (req: Request) => {
     const client = new Anthropic(ws ? { defaultHeaders: { "anthropic-workspace-id": ws } } : {});
     const res = await client.messages.create({
       model: MODEL,
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: SYSTEM,
       output_config: { effort: "low" },
       messages: [{ role: "user", content: `Revisen ${FOCO[String(step)]}.\n\n<trabajo_del_equipo>\n${JSON.stringify(payload)}\n</trabajo_del_equipo>` }],
